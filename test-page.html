@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page for DevTools</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 { color: #333; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .log-btn { background: #4CAF50; color: white; }
+        .warn-btn { background: #ff9800; color: white; }
+        .error-btn { background: #f44336; color: white; }
+        .fetch-btn { background: #2196F3; color: white; }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        #output {
+            background: #f5f5f5;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+            min-height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Page for Mini DevTools</h1>
+    <p>Use the buttons below to test the DevTools console and network monitoring.</p>
+
+    <div class="section">
+        <h3>Console Tests</h3>
+        <button class="log-btn" onclick="testLog()">console.log</button>
+        <button class="warn-btn" onclick="testWarn()">console.warn</button>
+        <button class="error-btn" onclick="testError()">console.error</button>
+        <button class="log-btn" onclick="testObject()">Log Object</button>
+    </div>
+
+    <div class="section">
+        <h3>Network Tests</h3>
+        <button class="fetch-btn" onclick="testFetch()">Fetch JSON</button>
+        <button class="fetch-btn" onclick="testFetchError()">Fetch 404</button>
+        <button class="fetch-btn" onclick="testXHR()">XHR Request</button>
+        <div id="output">Response will appear here...</div>
+    </div>
+
+    <div class="section">
+        <h3>DOM Structure</h3>
+        <div id="nested-example">
+            <div class="container">
+                <header class="header">
+                    <nav id="main-nav">
+                        <a href="#">Link 1</a>
+                        <a href="#">Link 2</a>
+                    </nav>
+                </header>
+                <main class="content">
+                    <article>
+                        <h2>Sample Article</h2>
+                        <p>This is some sample content to inspect in the Elements tab.</p>
+                    </article>
+                </main>
+                <footer>Footer content</footer>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // log some stuff on page load
+        console.log('Test page loaded!');
+        console.log('Current time:', new Date().toLocaleTimeString());
+
+        function testLog() {
+            console.log('This is a regular log message');
+            console.log('Multiple', 'arguments', 'work', 'too');
+        }
+
+        function testWarn() {
+            console.warn('This is a warning message');
+            console.warn('Something might be wrong here...');
+        }
+
+        function testError() {
+            console.error('This is an error message');
+            console.error('Something definitely went wrong!');
+        }
+
+        function testObject() {
+            const user = {
+                name: 'John Doe',
+                email: 'john@example.com',
+                age: 30,
+                hobbies: ['coding', 'gaming', 'reading']
+            };
+            console.log('User object:', user);
+        }
+
+        function testFetch() {
+            console.log('Starting fetch request...');
+            fetch('https://jsonplaceholder.typicode.com/posts/1')
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Fetch successful:', data.title);
+                    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(err => {
+                    console.error('Fetch failed:', err.message);
+                });
+        }
+
+        function testFetchError() {
+            console.log('Fetching non-existent resource...');
+            fetch('https://jsonplaceholder.typicode.com/posts/99999')
+                .then(res => {
+                    if (!res.ok) {
+                        console.warn('Got status:', res.status);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(err => {
+                    console.error('Fetch error:', err.message);
+                });
+        }
+
+        function testXHR() {
+            console.log('Starting XHR request...');
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://jsonplaceholder.typicode.com/users/1');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    console.log('XHR successful');
+                    document.getElementById('output').textContent = xhr.responseText;
+                }
+            };
+            xhr.onerror = function() {
+                console.error('XHR failed');
+            };
+            xhr.send();
+        }
+    </script>
+</body>
+</html>

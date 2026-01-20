@@ -1,0 +1,24 @@
+{
+  "name": "mini-devtools",
+  "version": "1.0.0",
+  "description": "Lightweight Chrome DevTools alternative",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "devtools",
+    "debugging",
+    "inspector"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.22.1"
+  },
+  "optionalDependencies": {
+    "puppeteer": "^21.6.1"
+  }
+}

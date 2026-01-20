@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini DevTools</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🛠️</span>
+                    <span class="logo-text">DevTools</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="console">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Console</span>
+                </button>
+                <button class="nav-item" data-tab="network">
+                    <span class="nav-icon">🌐</span>
+                    <span class="nav-text">Network</span>
+                </button>
+                <button class="nav-item" data-tab="elements">
+                    <span class="nav-icon">🏗️</span>
+                    <span class="nav-text">Elements</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="modeToggle" class="nav-item mode-toggle">
+                    <span class="nav-icon">📄</span>
+                    <span class="nav-text">Proxy Mode</span>
+                </button>
+                <button id="darkModeToggle" class="nav-item">
+                    <span class="nav-icon">🌙</span>
+                    <span class="nav-text">Theme</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-wrapper">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="url-input-group">
+                    <span class="url-icon">🔗</span>
+                    <input type="text" id="urlInput" class="url-input" placeholder="Enter URL to inspect..." spellcheck="false">
+                    <div class="url-dropdown" id="urlDropdown">
+                        <div class="dropdown-header">📌 Recent URLs</div>
+                        <div class="dropdown-list" id="recentUrlsList"></div>
+                    </div>
+                </div>
+                <button id="loadBtn" class="btn-load">
+                    <span>Load Page</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <button id="refreshBtn" class="btn-action" title="Refresh">🔄</button>
+                <button id="screenshotBtn" class="btn-action" title="Screenshot" style="display:none;">📷</button>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Preview Panel -->
+                <div class="preview-panel" id="previewPanel">
+                    <div class="preview-placeholder" id="previewPlaceholder">
+                        <div class="placeholder-content">
+                            <div class="placeholder-icon">🖥️</div>
+                            <h3>No page loaded</h3>
+                            <p>Enter a URL above to start inspecting</p>
+                            <div class="quick-links">
+                                <span>Try:</span>
+                                <button class="quick-link" data-url="test-page.html">Test Page</button>
+                                <button class="quick-link" data-url="https://example.com">example.com</button>
+                            </div>
+                        </div>
+                    </div>
+                    <iframe id="targetFrame"></iframe>
+                    <div id="screenshotView" class="screenshot-view"></div>
+                    <div class="loading-overlay" id="loadingOverlay">
+                        <div class="loader"></div>
+                        <span>Loading page...</span>
+                    </div>
+                </div>
+
+                <!-- Resizer -->
+                <div class="resizer" id="panelResizer"></div>
+
+                <!-- DevTools Panel -->
+                <div class="devtools-panel" id="devtoolsPanel">
+                    <!-- Console Tab -->
+                    <div class="tab-content active" id="consoleTab">
+                        <div class="panel-toolbar">
+                            <div class="filter-group">
+                                <button class="filter-btn active" data-filter="all">All</button>
+                                <button class="filter-btn" data-filter="log">📝 Log</button>
+                                <button class="filter-btn" data-filter="warn">⚠️ Warn</button>
+                                <button class="filter-btn" data-filter="error">❌ Error</button>
+                            </div>
+                            <div class="toolbar-right">
+                                <input type="text" id="consoleSearch" class="search-input" placeholder="🔍 Filter...">
+                                <button id="clearConsole" class="btn-tool">🗑️ Clear</button>
+                            </div>
+                        </div>
+                        <div class="console-output" id="consoleOutput">
+                            <div class="empty-state">
+                                <div class="empty-icon">📋</div>
+                                <p>Console is empty</p>
+                                <span>Log messages will appear here</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Network Tab -->
+                    <div class="tab-content" id="networkTab">
+                        <div class="panel-toolbar">
+                            <button id="clearNetwork" class="btn-tool">🗑️ Clear</button>
+                            <div class="network-stats" id="networkStats">
+                                <span class="stat-badge">0 requests</span>
+                                <span class="stat-badge">0 B transferred</span>
+                            </div>
+                        </div>
+                        <div class="network-container">
+                            <div class="network-table">
+                                <div class="network-header">
+                                    <span class="col-status">Status</span>
+                                    <span class="col-method">Method</span>
+                                    <span class="col-name">Name</span>
+                                    <span class="col-type">Type</span>
+                                    <span class="col-size">Size</span>
+                                    <span class="col-time">Time</span>
+                                </div>
+                                <div class="network-rows" id="networkRows">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">🌐</div>
+                                        <p>No requests captured</p>
+                                        <span>Network activity will appear here</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="network-detail" id="networkDetail">
+                                <div class="detail-header">
+                                    <span class="detail-title">Request Details</span>
+                                    <button class="btn-close" id="closeNetworkDetail">✕</button>
+                                </div>
+                                <div class="detail-tabs">
+                                    <button class="detail-tab active" data-detail="headers">Headers</button>
+                                    <button class="detail-tab" data-detail="response">Response</button>
+                                    <button class="detail-tab" data-detail="payload">Payload</button>
+                                </div>
+                                <div class="detail-content" id="detailContent"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Elements Tab -->
+                    <div class="tab-content" id="elementsTab">
+                        <div class="elements-container">
+                            <div class="dom-tree-panel">
+                                <div class="panel-header">🌳 DOM Tree</div>
+                                <div class="dom-tree" id="domTree">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">🏗️</div>
+                                        <p>No elements to show</p>
+                                        <span>Load a page to inspect the DOM</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="styles-panel" id="stylesPanel">
+                                <div class="panel-header">🎨 Computed Styles</div>
+                                <div class="styles-content" id="stylesContent">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">🖌️</div>
+                                        <p>No element selected</p>
+                                        <span>Click an element to see its styles</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <footer class="status-bar">
+                <div class="status-left">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Ready</span>
+                </div>
+                <div class="status-right">
+                    <span id="loadTime"></span>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="modules/iframe-manager.js"></script>
+    <script src="modules/console-monitor.js"></script>
+    <script src="modules/network-monitor.js"></script>
+    <script src="modules/elements-inspector.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
